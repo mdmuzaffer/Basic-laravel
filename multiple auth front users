@@ -1,2 +1,295 @@
 Now after create admin auth for backend create front auth:-
 ----------------------------------------------------------------------------------
+1. You have no need to Ceate a table for front users login you have already create default table - User
+from this command php artisan make:auth
+
+2. Create front user controller - command
+- php artisan make:controller FrontController
+
+3. Now Create form login and get form login data in frontController
+code:- file - Form view
+---------------------------------------------------
+
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">{{ __('Users Login') }}</div>
+
+                <div class="card-body">
+                    <form method="POST" action="{{ url('/user/login') }}">
+                        @csrf
+
+                        <div class="form-group row">
+                            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+
+                                @error('email')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
+
+                                @error('password')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-6 offset-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+
+                                    <label class="form-check-label" for="remember">
+                                        {{ __('Remember Me') }}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-0">
+                            <div class="col-md-8 offset-md-4">
+                                <button type="submit" class="btn btn-primary">
+                                    {{ __('Login') }}
+                                </button>
+
+                                @if (Route::has('password.request'))
+                                    <a class="btn btn-link" href="{{ route('password.request') }}">
+                                        {{ __('Forgot Your Password?') }}
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+-------------------------------------------------
+
+4. Now get forn data in controller and add condition to login like Auth::attemp
+code:- file - FrontController
+---------------------------------------------------------
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\FrontUser;
+use Session;
+use Auth;
+use User;
+class FrontController extends Controller
+{
+    public function userLogin(Request $request){
+		if($request->isMethod('post')){
+			$userData = $request->all();
+			//$userCount = FrontUser::where(['email'=>$userData['email'],'password'=>$userData['password']])->count();
+			if(Auth::attempt(['email'=>$userData['email'],'password'=>$userData['password']])){
+				Session::put('FrontUserSession', $userData['email']);
+				return redirect('/user/dashboard');
+			}			
+		}
+		return view('front.front_login');
+	}
+	
+	public function userdashboard(){
+		if(Auth::check()){
+			return view('front.home');
+		}
+	}
+	public function userLogout(){
+		Session::flush();
+		return redirect('/');
+	}
+}
+
+---------------------------------------------------------
+
+5. Now create front middleware and add code of session:-
+
+code - file -FrontUser 
+---------------------------
+
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Session;
+
+class FrontUser
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return mixed
+     */
+    public function handle($request, Closure $next)
+    {
+		if(empty(Session::has('FrontUserSession'))){
+			return redirect('/');
+		}
+        return $next($request);
+    }
+}
+
+
+-------------------------------
+
+6. Now update kernal.php file code and added in the - protected $routeMiddleware array like
+code:-file kernal.php
+-------------------------------------------
+
+<?php
+
+namespace App\Http;
+
+use Illuminate\Foundation\Http\Kernel as HttpKernel;
+
+class Kernel extends HttpKernel
+{
+    /**
+     * The application's global HTTP middleware stack.
+     *
+     * These middleware are run during every request to your application.
+     *
+     * @var array
+     */
+    protected $middleware = [
+        \App\Http\Middleware\TrustProxies::class,
+        \App\Http\Middleware\CheckForMaintenanceMode::class,
+        \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
+        \App\Http\Middleware\TrimStrings::class,
+        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+    ];
+
+    /**
+     * The application's route middleware groups.
+     *
+     * @var array
+     */
+    protected $middlewareGroups = [
+        'web' => [
+            \App\Http\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            // \Illuminate\Session\Middleware\AuthenticateSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \App\Http\Middleware\VerifyCsrfToken::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ],
+
+        'api' => [
+            'throttle:60,1',
+            'bindings',
+        ],
+    ];
+
+    /**
+     * The application's route middleware.
+     *
+     * These middleware may be assigned to groups or used individually.
+     *
+     * @var array
+     */
+    protected $routeMiddleware = [
+        'auth' => \App\Http\Middleware\Authenticate::class,
+        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+        'can' => \Illuminate\Auth\Middleware\Authorize::class,
+        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
+        'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
+        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+		'FrontUser' => \App\Http\Middleware\FrontUser::class,
+		'BackendAdmin' => \App\Http\Middleware\BackendAdmin::class,
+    ];
+
+    /**
+     * The priority-sorted list of middleware.
+     *
+     * This forces non-global middleware to always be in the given order.
+     *
+     * @var array
+     */
+    protected $middlewarePriority = [
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \App\Http\Middleware\Authenticate::class,
+        \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        \Illuminate\Session\Middleware\AuthenticateSession::class,
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        \Illuminate\Auth\Middleware\Authorize::class,
+    ];
+}
+
+--------------------------------------------
+
+7. Now add the group middleware route in the web.php file
+code - file - web.php 
+------------------------------------
+// Front users routes
+Route::Match(['get','post'],'/user/login', 'FrontController@userLogin');
+Route::group(['middleware' => 'FrontUser'], function(){
+    Route::Match(['get','post'],'/user/dashboard', 'FrontController@userdashboard');
+	Route::get('/user/logout', 'FrontController@userLogout');
+});
+---------------------------------------
+8. Here is the view file 
+
+----------------------------------------
+
+@extends('layouts.app')
+@section('content')
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">Dashboard</div>
+
+                <div class="card-body">
+                    @if (session('status'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+                    You are logged in!<br>
+					{{Auth::user()['name']}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+-------------------------------------------
+
+9. Important think dont forget to add Seession , Auth ,Model at top of Both middleware and controller like
+use Session;
+use Auth;
+use User;
+
