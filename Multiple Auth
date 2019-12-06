@@ -22,7 +22,7 @@ if(Auth::check()){
 5. Ceate a table for admin login - command
 php artisan make:migration create_admins_table
 
-6. Now add the admin migration table fields in the table -create_admins_table
+6. Now add the admin migration table fields in the table -create_admins_table 
 code:-
 -------------------------
 
@@ -65,4 +65,52 @@ class CreateAdminsTable extends Migration
 }
 
 ---------------------------
+
+7. Now run the command to create table into the database- command
+php artisan migrate
+
+8. Now create Admin model and controller -command
+- php artisan make:model Admin
+- php artisan make:controller AdminController
+
+9. Now It is the Important things create a form for admin login and get form data in the AdminController and here
+add the code to count of user for admin not add code Auth::attempt , Because auth attemp query store data in auth system .
+So, you should to use for front users Auth::attempt query.
+Code
+------------------------------------------------------
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Admin;
+use Session;
+class AdminController extends Controller
+{
+    public function adminLogin(Request $request){
+		if($request->isMethod('post')){
+			$adminData = $request->all();
+			$adminCount = Admin::where(['email'=>$adminData['email'],'password'=>md5($adminData['password']),'status'=>1])->count();
+			if($adminCount >0){
+				$adminDetails = Admin::where(['email'=>$adminData['email'],'password'=>md5($adminData['password']),'status'=>1])->first()->toArray();
+				Session::put('AdminSession',$adminDetails);
+				return redirect('/admin/dashboard');
+			}
+		}
+		return view('backend.admin_login');
+	}
+	
+	public function admindashboard(){
+		return view('backend.home');
+	}
+	
+	public function adminLogout(){
+		Session::flush();
+		return redirect('/');
+	}
+}
+
+-----------------------------------------------------
+
+
 
