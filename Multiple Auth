@@ -1,1 +1,68 @@
-How to create Multiple auth in laravel
+Question :- How to create Multiple auth in laravel 6 ?
+-------------------------------------------------------------
+Answer:- 
+1. First of all setup laravel project  - command
+composer create-project --prefer-dist laravel/laravel multipleauth
+
+2. Now create default laravel auth system - command
+-> php artisan ui vue --auth
+-> composer require laravel/ui
+-> php artisan migrate
+
+3. Now you have created default laravel auth for admin section can login.
+
+4. Now this is the most important things default auth system and table use for front users login because you can find the data by Auth
+check method like - 
+
+if(Auth::check()){
+			return view('front.home'); or
+      {{Auth::user()['name']}}
+}
+
+5. Ceate a table for admin login - command
+php artisan make:migration create_admins_table
+
+6. Now add the admin migration table fields in the table -create_admins_table
+code:-
+-------------------------
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateAdminsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('admins', function (Blueprint $table) {
+            $table->bigIncrements('id');
+			$table->string('name');
+            $table->string('email');
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->tinyInteger('status')->default('1');
+            $table->rememberToken();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('admins');
+    }
+}
+
+---------------------------
+
