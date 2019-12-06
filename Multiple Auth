@@ -112,5 +112,125 @@ class AdminController extends Controller
 
 -----------------------------------------------------
 
+10. Now create a middleware for admin user and check admin session (AdminSession) also redirect - command 
+- php artisan make:middleware BackendAdmin
+code of middleware:-
+---------------------------------------------
+<?php
+namespace App\Http\Middleware;
+use Closure;
+use Session;
+class BackendAdmin
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return mixed
+     */
+    public function handle($request, Closure $next)
+    {
+		if(empty(Session::has('AdminSession'))){
+			return redirect('/');
+		}
+        return $next($request);
+    }
+}
+
+---------------------------------------------
+
+11. Now update kernal.php file of created middleware in the - protected $routeMiddleware array like
+code:-
+--------------------------------------------
+protected $routeMiddleware = [
+        'auth' => \App\Http\Middleware\Authenticate::class,
+        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+        'can' => \Illuminate\Auth\Middleware\Authorize::class,
+        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
+        'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
+        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+	// my updated both front and admin middleware
+	-----------------------------------------------------------
+	'FrontUser' => \App\Http\Middleware\FrontUser::class,			// my updated code 
+	'BackendAdmin' => \App\Http\Middleware\BackendAdmin::class,
+	------------------------------------------------------------------
+    ];
+
+-------------------------------------------
+
+12. Also  now  need to add group middleware rout in the web.php file to protect rout can not access with out login 
+code:-
+---------------------------------------------------------------------      
+
+//Admin controller
+Route::Match(['get','post'],'/admin', 'AdminController@adminLogin');
+Route::group(['middleware' => 'BackendAdmin'], function(){
+    Route::Match(['get','post'],'/admin/dashboard', 'AdminController@admindashboard');
+	Route::get('/admin/logout', 'AdminController@adminLogout');
+});
+
+---------------------------------------------------------------------
+13. Now almost you have done and also you can get the data from session for admin user like
+
+code:-
+------------------------------------------------------------------
+
+
+@extends('layouts.app')
+@section('content')
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">Dashboard <p style="float:right;"><a href="{{url('/admin/logout')}}">Logout</a></p></div>
+				
+                <div class="card-body">
+				
+                    @if (session('status'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+					
+                    You are logged in!<br>
+			{{Session::get('AdminSession')['name']}}
+			<?php 
+			echo"<pre>";
+			print_r(Session::get('AdminSession');
+			?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+
+
+-------------------------------------------------------------------
+
+14. Now you can see How to create Front user auth system using Auth::attemp();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
