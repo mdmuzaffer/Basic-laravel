@@ -1,0 +1,155 @@
+How to integrate payumoney in laravel site
+-------------------------------------------
+1.Search in google -indipay package laravel 
+open this link - https://github.com/softon/indipay and run the command 1
+Step 1: Install package using composer
+    composer require softon/indipay
+	
+Step 2: Publish the config & Middleware by running in your terminal
+    php artisan vendor:publish --all
+	
+Step 3: Modify the app\Http\Kernel.php to use the new Middleware. This is required so as to avoid CSRF verification 
+on the Response Url from the payment gateways. You may adjust the routes in the config file config/indipay.php to disable
+CSRF on your gateways response routes.
+ App\Http\Middleware\VerifyCsrfToken::class,
+to
+App\Http\Middleware\VerifyCsrfMiddleware::class,
+
+Uses:-
+----------
+Step 4 .
+Edit the config/indipay.php. Set the appropriate Gateway and its parameters. Then in your code.
+'gateway' => 'Payumoney',  // Replace with the name of default gateway you want to use
+
+Step 5.
+Change the success url and fail url
+	// Should be route address for url() function
+	'successUrl' => env('INDIPAY_SUCCESS_URL', 'payumoney/response'),
+	'failureUrl' => env('INDIPAY_FAILURE_URL', 'payumoney/response'),
+
+Step 6. change the "merchantKey" and "Salt" key with test key from the url
+search key words - payumoney integration faq test
+url- https://testdeveloper.payubiz.in/documentation/Web-Integration-FAQ%27s/166
+
+key:-
+------
+   Merchant ID : gtKFFx
+          Salt : eCwWELxi
+Test cart details:-
+---------------------------
+
+    CardName: Any name
+    CardNumber: 5123456789012346
+    CVV: 123
+    Expiry: May 2017
+
+Step 7. Now make a separate controller any name like payumoneyController
+cmd - php atisan make controller payumoneyController
+
+Step 8. Now checked which method is selected like-
+if($placeOrder['paymentMethod'] =="payumoney"){
+	// checked if pay ment method payumoney redirect in payumoneyController
+	return redirect('/payumoney');
+}
+
+Step 9. Now add the field of form parameters in payumoney controller
+-----------------------------------------------------------------------
+Note here user session and model to get dynamically data also change the txnid, order_id it may be matched in test account.
+
+<?php
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Session;
+use App\Order;
+use Softon\Indipay\Facades\Indipay; 
+
+class PayumoneyController extends Controller
+{
+   public function payumoneyOrder(){
+		//Session::get('order_id');
+		//Session::get('grand_total');
+		/* All Required Parameters by your Gateway */
+      $parameters = [
+        'txnid' => '1233258321223322',
+        'order_id' => '12328722212',
+        'amount' => '1250.00',
+		'firstname'=>'Muzaffer',
+		'lastname'=> 'Alam',
+		'email'=> 'shazidh@yopmail.com',
+		'phone'=> '8855223366',
+		'productinfo'=>'12457896325',
+		'service_provider'=>'',
+		'zipcode'=> '140603',
+		'city'=> 'Mohali',
+		'state'=> 'punjab',
+		'country' =>'india',
+		'address1'=> 'mohali',
+		'address2'=> 'Delhi',
+		'curl' => url('payu/response'),
+      ];
+      $order = Indipay::prepare($parameters);
+      return Indipay::process($order);
+   }
+}
+// response url 
+
+   public function payumoneyResponse(Request $request){
+	     // For default Gateway
+        $response = Indipay::response($request);
+ 		/*echo"<pre>";
+		print_r($response);
+		die; */
+		if($response['status'] =='failure' || $response['unmappedstatus'] =='failed'){
+			//echo "Your oder status fail";
+			$user_email = Auth::user()->email;
+			DB::table('cart')->where('user_email', $user_email)->delete();
+			return view('order.paypal_cancle');
+		}else{
+			//echo "Your oder placed successfully";
+			$user_email = Auth::user()->email;
+			DB::table('cart')->where('user_email', $user_email)->delete();
+			return view('order.paypal_thank');
+		}
+	   
+   }
+-------------------------------------------------------------------------
+Step 10. C:\xampp\htdocs\ecommerce\vendor\softon\indipay\src\Gateways\PayUMoneyGatway.php
+remove the service_provider or comment    //'service_provider' => 'required',
+
+Step 11. C:\xampp\htdocs\ecommerce\vendor\softon\indipay\src\view\payumoney.blade.php
+remove the extra form fields like -udf1,2,3 etc.
+
+Step 12. Also remove scrf token from response url for getting response back like.
+
+Add the code in the config/indipay.php file below
+
+  // Add your response link here. In Laravel 5.2 you may use the api middleware instead of this.
+    'remove_csrf_check' => [
+        'payumoney/response' //here added response url
+    ],
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
