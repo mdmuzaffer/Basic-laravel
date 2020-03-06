@@ -124,3 +124,40 @@ I have also need to added class in provider array in same auth file as like belo
             'model' => App\Admin::class,   ------------->model class name
         ],
 	----------------------------------------
+
+4. Now I have created a midleware 
+ php artisan make:middleware Admin
+
+and added Class in kernal.php in the middleware group array
+
+    protected $routeMiddleware = [
+        'auth' => \App\Http\Middleware\Authenticate::class,
+        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+        'can' => \Illuminate\Auth\Middleware\Authorize::class,
+        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
+        'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
+        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+	'admin' => \App\Http\Middleware\Admin::class, ------------->added class
+    ];
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
