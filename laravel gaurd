@@ -2,7 +2,7 @@
 How to make multiple auth using gaurd in laravel 6
 =============================================================
 
-Create migration for admins
+1. Create migration for admins
 To make the admins table, run the following command:
 
 php artisan make:migration create_admins_table
@@ -50,3 +50,47 @@ class CreateAdminsTable extends Migration
 }
 
 -------------------------
+
+2. Migrate the database
+Now that we have defined our tables, let us migrate the database:
+-----------------------
+php artisan migrate
+
+3. Admin model
+To make the model for the admins, run the following command:
+
+php artisan make:model Admin
+------------------------------
+
+<?php
+
+namespace App;
+
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Admin extends Authenticatable
+{
+	use Notifiable;
+
+	protected $guard = 'admin';
+
+	protected $fillable = [
+		'name', 'email', 'email_verified_at', 'type', 'mobile', 'image', 'status'
+	];
+
+	protected $hidden = [
+		'password', 'remember_token',
+	];
+    
+}
+-----------------------------------------------
+
+Define the guards
+Laravel guards define how users are authenticated for each request. Laravel comes with some guards for authentication, but we can also create ours as well. This will enable us to use Laravel’s default authentication system with our Admin and Writer models as well.
+
+Open config/auth.php and add the new guards edit as follows:
+
+
