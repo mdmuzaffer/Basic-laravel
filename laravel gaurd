@@ -144,6 +144,34 @@ and added Class in kernal.php in the middleware group array
 	'admin' => \App\Http\Middleware\Admin::class, ------------->added class
     ];
     
+5. I checked gaurd in the created middlewar file 
+-----------------------------------------------
+
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Auth;
+class Admin
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return mixed
+     */
+    public function handle($request, Closure $next)
+    {
+		if(!Auth::guard('admin')->check()){
+			return redirect('/admin/login');
+		}
+        return $next($request);
+    }
+}
+
+-----------------------------------------------------
 
 
 
