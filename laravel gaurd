@@ -173,8 +173,11 @@ class Admin
 
 -----------------------------------------------------
 
+Now I have added middleware class in the routing web.php file with group routing.
 
-
+Route::group(['middleware'=>['admin']],function(){
+	Route::get('/dashboard', 'AdminController@adminUser');	
+	});
 
 
 
