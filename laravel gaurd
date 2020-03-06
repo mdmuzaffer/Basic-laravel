@@ -93,4 +93,34 @@ Laravel guards define how users are authenticated for each request. Laravel come
 
 Open config/auth.php and add the new guards edit as follows:
 
+-----------------------
+    'guards' => [
+        'web' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+		'admin' => [               -------------->added gaurd's name
+            'driver' => 'session',
+            'provider' => 'admins',       --------------->updated table name
+        ],
+        'api' => [
+            'driver' => 'token',
+            'provider' => 'users',
+            'hash' => false,
+        ],
+    ],
+---------------------------------------------
+I have also need to added class in provider array in same auth file as like below
 
+------------------------------
+
+ 'providers' => [
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => App\User::class,
+        ],
+		'admins' => [             --------------> gaurd admin name
+            'driver' => 'eloquent',
+            'model' => App\Admin::class,   ------------->model class name
+        ],
+	----------------------------------------
