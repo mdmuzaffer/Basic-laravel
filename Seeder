@@ -1,1 +1,9 @@
 
+How to create seeder in Laravel and use it.
+I have written following steps with command and code.
+
+Create Seeder Command:
+1. php artisan make:seeder AdminTableSeeder
+
+
+
