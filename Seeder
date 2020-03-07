@@ -5,5 +5,10 @@ I have written following steps with command and code.
 Create Seeder Command:
 1. php artisan make:seeder AdminTableSeeder
 
+after run above command, it will create one file AdminUserSeeder.php on seeds folder. All seed classes are stored in the database/seeds directory.
+Then you can write code of create admin user using model in laravel.
+database/seeds/AdminTableSeeder.php
+
+
 
 
