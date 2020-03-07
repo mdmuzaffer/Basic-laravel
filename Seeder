@@ -9,6 +9,34 @@ after run above command, it will create one file AdminUserSeeder.php on seeds fo
 Then you can write code of create admin user using model in laravel.
 database/seeds/AdminTableSeeder.php
 
+---------------------------------------------------------------------------
+<?php
+
+use Illuminate\Database\Seeder;
+
+class AdminTableSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        DB::table('admins')->insert(          -------------------->updated code that.
+			[
+				'name' => 'Muzaffer',
+				'email' => 'admin@gmail.com',
+				'password' => bcrypt('admin@123'),
+				'type' =>'Admin',
+				'mobile' =>'7896541235',
+				'image' =>'NULL',
+				'status' =>'1',
+			]
+		);
+    }
+}
+------------------------------------------------------------------------
 
 
 
