@@ -39,4 +39,5 @@ class AdminTableSeeder extends Seeder
 ------------------------------------------------------------------------
 
 
-
+2. You need to run following command to run single seeder:
+php artisan db:seed --class=AdminTableSeeder
