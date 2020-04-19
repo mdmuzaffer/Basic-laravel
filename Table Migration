@@ -1,0 +1,4 @@
+
+Step 1 run the command to create migration table
+command :-
+php artisan make:migration create_sections_table
