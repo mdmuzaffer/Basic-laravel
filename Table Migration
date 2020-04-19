@@ -2,3 +2,8 @@
 Step 1 run the command to create migration table
 command :-
 php artisan make:migration create_sections_table
+
+Now open the file create_sections_table in the \database\migrations folder
+
+Step 2. add the table field as your requiredment
+
