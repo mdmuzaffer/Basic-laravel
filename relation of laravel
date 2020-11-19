@@ -2,3 +2,18 @@ How to use belongsTo relaction with condition in laravel module
 First create function of relation in module and the call into controller
 Here I have created belongsTo relaction with condition to sort unwanted data
 ==================================================================================
+class Product extends Model
+{
+    public function category(){
+		return $this->belongsTo('App\Category', 'category_id')->select('id','category_name','status','category_image');
+	}
+	public function section(){
+		return $this->belongsTo('App\Section', 'section_id')->select('id','name','status');
+	}
+	
+}
+
+=================================================================
+
+Above in relation added filter like - select('id','category_name','status','category_image');
+I can also add subquery in laravel controller to filter unwanted data
