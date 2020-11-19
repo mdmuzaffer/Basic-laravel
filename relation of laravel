@@ -1,1 +1,4 @@
 How to use belongsTo relaction with condition in laravel module
+First create function of relation in module and the call into controller
+Here I have created belongsTo relaction with condition to sort unwanted data
+==================================================================================
