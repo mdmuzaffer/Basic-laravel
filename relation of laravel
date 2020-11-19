@@ -48,4 +48,13 @@ Array
 
 I can also add subquery in laravel controller to filter unwanted data
 =======================================================================
-
+	$productData = Product::with('category','section')->get();  == original query
+		
+	$productData = Product::with(['category'=>function($query){      ====== added subquery working same
+		$query->select('id','category_name');
+		},'section'=>function($query){
+		$query->select('id','name');
+		}])->get();
+		
+RESULT
+-----------
