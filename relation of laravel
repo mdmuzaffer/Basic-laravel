@@ -16,4 +16,36 @@ class Product extends Model
 =================================================================
 
 Above in relation added filter like - select('id','category_name','status','category_image');
+RESULT
+-------------
+Array
+(
+    [0] => stdClass Object
+        (
+            [id] => 1
+            [category_id] => 2
+            [section_id] => 1
+            [product_name] => Blue Casual T-shirt
+		.
+		.
+		.
+            [category] => stdClass Object
+                (
+                    [id] => 2
+                    [category_name] => Casual-T-shirt
+                    [status] => 1
+                    [category_image] => Null
+                )
+
+            [section] => stdClass Object
+                (
+                    [id] => 1
+                    [name] => Man
+                    [status] => 1
+                )
+
+        )
+
 I can also add subquery in laravel controller to filter unwanted data
+=======================================================================
+
