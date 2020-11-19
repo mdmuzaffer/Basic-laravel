@@ -58,3 +58,26 @@ I can also add subquery in laravel controller to filter unwanted data
 		
 RESULT
 -----------
+Array
+(
+    [0] => stdClass Object
+        (
+            [id] => 1
+            [category_id] => 2
+            [section_id] => 1
+            [product_name] => Blue Casual T-shirt
+		.
+		.
+            [category] => stdClass Object
+                (
+                    [id] => 2
+                    [category_name] => Casual-T-shirt
+                )
+
+            [section] => stdClass Object
+                (
+                    [id] => 1
+                    [name] => Man
+                )
+
+        )
