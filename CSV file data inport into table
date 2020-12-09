@@ -1,2 +1,44 @@
 Import CSV Data to MySQL Database with Laravel
 ======================================================
+1: Completed Code
+---------
+
+1 view this is the form to uploaload csv file
+=========================================================================================================================================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>Stacked form</h2>
+  
+   <!-- Message -->
+     @if(Session::has('message'))
+        <p style="color:red;">{{ Session::get('message') }}</p>
+     @endif
+	 
+  <form action="{{action('CsvformController@csvupload')}}" accept-charset="UTF-8" method="post" enctype="multipart/form-data">
+  @csrf()
+    <div class="form-group">
+      <label for="pwd">Name</label>
+      <input type="text" class="form-control" name="first-name">
+    </div>
+	 <div class="form-group">
+      <label for="pwd">Upload CSV file</label>
+      <input type="file" class="form-control-file border" name="file">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+
+</body>
+</html>
