@@ -167,11 +167,59 @@ class Contact extends Model
 
 ========================================================
 
-Route code of routing
+4. Route code of routing
 =================================
 Route::get('/csv-upload', 'CsvformController@CsvForm');
 Route::post('/csvupload', 'CsvformController@csvupload');
 
+====================================================================
+5. Table migration :-
+=========================
+<?php
 
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateContactsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('contacts', function (Blueprint $table) {
+            $table->id();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('email');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('contacts');
+    }
+}
+=========================================
+6. CSV file fields level
+=================================
+
+first_name	last_name	email
+Muzaffer	Alam	md@gmail.com
+Muzaffer	Alam	md@gmail.com
+Muzaffer	Alam	md@gmail.com
+Muzaffer	Alam	md@gmail.com
+Muzaffer	Alam	md@gmail.com
+Muzaffer	Alam	md@gmail.com
+Muzaffer	Alam	md@gmail.com
 
 
